@@ -1,0 +1,259 @@
+*markdown-headers*  Unicode styling for markdown headers
+
+Author:  Gerard Decatrel
+License: MIT
+Version: 1.0.0
+
+==============================================================================
+CONTENTS                                    *markdown-headers-contents*
+
+    1. Introduction ................ |markdown-headers-intro|
+    2. Requirements ................ |markdown-headers-requirements|
+    3. Installation ................ |markdown-headers-installation|
+    4. Configuration ............... |markdown-headers-configuration|
+    5. Commands .................... |markdown-headers-commands|
+    6. Examples .................... |markdown-headers-examples|
+    7. Troubleshooting ............. |markdown-headers-troubleshooting|
+    8. About ....................... |markdown-headers-about|
+
+==============================================================================
+1. INTRODUCTION                             *markdown-headers-intro*
+
+This plugin transforms the display of markdown headers using Unicode
+characters. Headers can be styled with either double-struck (𝕌𝕟𝕚𝕔𝕠𝕕𝕖) or
+fullwidth (Ｕｎｉｃｏｄｅ) characters, and optionally displayed in all caps.
+
+The plugin uses Vim's native conceal feature to change the display without
+modifying the actual file content.
+
+Features:~
+  • Configurable font style per header level (H1-H6)
+  • Optional all-caps transformation per header level
+  • Non-destructive display (file content unchanged)
+  • Toggle concealment on/off with a command
+
+==============================================================================
+2. REQUIREMENTS                       *markdown-headers-requirements*
+
+  • Vim 7.3 or later with |conceal| support
+  • Terminal emulator with Unicode support
+  • Font that includes Unicode double-struck and fullwidth characters
+    (most modern monospace fonts like JetBrains Mono, Fira Code, etc.)
+
+==============================================================================
+3. INSTALLATION                       *markdown-headers-installation*
+
+Using vim-plug:~
+>
+    Plug 'Voltron369/markdown-headers'
+<
+
+Using Vundle:~
+>
+    Plugin 'Voltron369/markdown-headers'
+<
+
+Using Pathogen:~
+>
+    cd ~/.vim/bundle
+    git clone https://github.com/Voltron369/markdown-headers.vim.git
+<
+
+Manual installation:~
+
+Copy the files to your ~/.vim directory maintaining the directory structure:
+>
+    ~/.vim/after/syntax/markdown.vim
+    ~/.vim/plugin/markdown-headers.vim
+    ~/.vim/doc/markdown-headers.txt
+<
+
+After manual installation, generate help tags:~
+>
+    :helptags ~/.vim/doc
+<
+
+==============================================================================
+4. CONFIGURATION                     *markdown-headers-configuration*
+
+All configuration is done through global variables in your |vimrc|.
+
+------------------------------------------------------------------------------
+4.1 Font Style                       *g:md_h1_style* *g:md_h2_style* 
+                                     *g:md_h3_style* *g:md_h4_style*
+                                     *g:md_h5_style* *g:md_h6_style*
+
+Set the font style for each header level (H1-H6).
+
+Valid values:~
+  'doublestruck' - Use double-struck Unicode characters (𝔸𝔹ℂ)
+  'fullwidth'    - Use fullwidth Unicode characters (ＡＢＣ)
+  'none'         - Use normal characters (ABC)
+
+Default:~
+  All levels default to 'doublestruck'
+
+Example:~
+>
+    let g:md_h1_style = 'fullwidth'
+    let g:md_h2_style = 'doublestruck'
+    let g:md_h3_style = 'none
+<
+
+------------------------------------------------------------------------------
+4.2 All Caps                         *g:md_h1_caps* *g:md_h2_caps*
+                                     *g:md_h3_caps* *g:md_h4_caps*
+                                     *g:md_h5_caps* *g:md_h6_caps*
+
+Enable or disable all-caps display for each header level.
+
+Valid values:~
+  1 - Enable all caps (convert lowercase to uppercase)
+  0 - Disable (preserve original case)
+
+Default:~
+  H1: 1 (all caps enabled)
+  H2-H6: 0 (all caps disabled)
+
+Example:~
+>
+    let g:md_h1_caps = 1
+    let g:md_h2_caps = 1
+    let g:md_h3_caps = 0
+<
+
+------------------------------------------------------------------------------
+4.3 Complete Configuration Example
+
+>
+    " H1: Fullwidth, all caps
+    let g:md_h1_style = 'fullwidth'
+    let g:md_h1_caps = 1
+
+    " H2: Double-struck, all caps
+    let g:md_h2_style = 'doublestruck'
+    let g:md_h2_caps = 1
+
+    " H3-H6: Double-struck, normal case
+    let g:md_h3_style = 'doublestruck'
+    let g:md_h3_caps = 0
+    " (h4, h5, h6 will use defaults if not specified)
+<
+
+==============================================================================
+5. COMMANDS                             *markdown-headers-commands*
+
+                                            *:MarkdownHeadersToggle*
+:MarkdownHeadersToggle      Toggle the display of Unicode headers on/off.
+                            This command toggles between 'conceallevel' 2
+                            and 0, allowing you to quickly see the original
+                            markdown syntax or the Unicode display.
+
+Add this to your vimrc:~
+
+command! MarkdownHeadersToggle call s:ToggleHeaders()
+
+function! s:ToggleHeaders()
+  if &conceallevel == 0
+    setlocal conceallevel=2
+  else
+    setlocal conceallevel=0
+  endif
+endfunction
+<
+
+You can map this to a key for quick access:~
+>
+    nnoremap <leader>mh :MarkdownHeadersToggle<CR>
+<
+
+==============================================================================
+6. EXAMPLES                             *markdown-headers-examples*
+
+Example 1: All headers double-struck, H1 and H2 in caps~
+>
+    let g:md_h1_caps = 1
+    let g:md_h2_caps = 1
+<
+
+Original:                   Display:
+# Introduction              # 𝕀ℕ𝕋ℝ𝕆𝔻𝕌ℂ𝕋𝕀𝕆ℕ
+## Getting Started          ## 𝔾𝔼𝕋𝕋𝕀ℕ𝔾 𝕊𝕋𝔸ℝ𝕋𝔼𝔻
+### Installation            ### 𝕀𝕟𝕤𝕥𝕒𝕝𝕝𝕒𝕥𝕚𝕠𝕟
+
+------------------------------------------------------------------------------
+Example 2: H1 fullwidth caps, rest double-struck normal~
+>
+    let g:md_h1_style = 'fullwidth'
+    let g:md_h1_caps = 1
+<
+
+Original:                   Display:
+# Welcome                   # ＷＥＬＣＯＭＥ
+## Features                 ## 𝔽𝕖𝕒𝕥𝕦𝕣𝕖𝕤
+### Easy to Use             ### 𝔼𝕒𝕤𝕪 𝕥𝕠 𝕌𝕤𝕖
+
+------------------------------------------------------------------------------
+Example 3: Progressive sizing effect~
+>
+    let g:md_h1_style = 'fullwidth'
+    let g:md_h1_caps = 1
+    let g:md_h2_style = 'doublestruck'
+    let g:md_h2_caps = 1
+    let g:md_h3_style = 'doublestruck'
+    let g:md_h3_caps = 0
+<
+
+Creates a visual hierarchy: fullwidth caps → double-struck caps → normal
+
+==============================================================================
+7. TROUBLESHOOTING                 *markdown-headers-troubleshooting*
+
+Problem: Unicode characters don't display~
+Solution: Ensure your terminal and font support Unicode. Try switching to
+          a modern monospace font like JetBrains Mono or Fira Code.
+
+Problem: Characters display but look wrong~
+Solution: Your font may not include the specific Unicode blocks. Try a
+          different font or switch between 'doublestruck' and 'fullwidth'.
+
+Problem: Headers aren't transforming~
+Solution: Check that concealing is enabled:
+>
+          :set conceallevel?
+<
+          Should return 2. Also check:
+>
+          :set concealcursor?
+<
+          If you want concealing even when cursor is on the line, try:
+>
+          :set concealcursor=nvc
+<
+
+Problem: Want to see original markdown temporarily~
+Solution: Use |:MarkdownHeadersToggle| or manually:
+>
+          :set conceallevel=0
+<
+
+Problem: Changes in vimrc not taking effect~
+Solution: Ensure variables are set before the plugin loads, or reload:
+>
+          :e
+<
+
+Problem: Interferes with other markdown plugins~
+Solution: This plugin uses after/syntax/ which loads last. If conflicts
+          occur, try adjusting the load order or disabling competing
+          syntax modifications.
+
+==============================================================================
+8. ABOUT                                   *markdown-headers-about*
+
+Repository: https://github.com/Voltron369/markdown-headers.vim
+Issues:     https://github.com/Voltron369/markdown-headers.vim/issues
+License:    MIT
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
